@@ -1,0 +1,89 @@
+{
+  "ProjectName": "Issue Tracker",
+  "ReleaseLabel": "v2.1.0-rc1",
+  "DocumentDate": "",
+  "Configuration": {},
+  "Review": [
+    {
+      "FunctionalArea": "Authentication",
+      "Subarea": "Login",
+      "ItemLabel": "Standard Login",
+      "HumanAction": "Enter valid username and password, click Login",
+      "Expectation": "User is redirected to the dashboard with a welcome message",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Authentication",
+      "Subarea": "Login",
+      "ItemLabel": "Invalid Credentials",
+      "HumanAction": "Enter an incorrect password and click Login",
+      "Expectation": "An error message is displayed without revealing which field is wrong",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Authentication",
+      "Subarea": "Logout",
+      "ItemLabel": "Logout Flow",
+      "HumanAction": "Click the Logout button from any page",
+      "Expectation": "Session is terminated and user is redirected to the login page",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Create Issue",
+      "ItemLabel": "New Issue Form",
+      "HumanAction": "Navigate to Issues > New, fill in required fields, and submit",
+      "Expectation": "Issue is created with correct fields and appears in the issue list",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Create Issue",
+      "ItemLabel": "Validation",
+      "HumanAction": "Submit the form with the Title field empty",
+      "Expectation": "A validation error is shown and the form is not submitted",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Edit Issue",
+      "ItemLabel": "Update Status",
+      "HumanAction": "Open an existing issue and change its status from Open to In Progress",
+      "Expectation": "Status is updated and the change is reflected in the issue list",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Edit Issue",
+      "ItemLabel": "Add Comment",
+      "HumanAction": "Open an issue and add a comment",
+      "Expectation": "Comment appears in the activity log with correct timestamp and author",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Reporting",
+      "Subarea": "Dashboard",
+      "ItemLabel": "Summary Counts",
+      "HumanAction": "Navigate to the Dashboard page",
+      "Expectation": "Issue counts by status are displayed and match the actual data",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Reporting",
+      "Subarea": "Export",
+      "ItemLabel": "CSV Export",
+      "HumanAction": "Click Export to CSV from the issue list",
+      "Expectation": "A CSV file is downloaded containing all visible issues with correct columns",
+      "Passes": false,
+      "Feedback": ""
+    }
+  ]
+}
