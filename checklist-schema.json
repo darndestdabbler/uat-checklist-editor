@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/darndestdabbler/uat-checklist-editor/checklist-schema.json",
+  "title": "UAT Checklist",
+  "description": "Schema for UAT checklist files used by the UAT CheckList Editor",
+  "type": "object",
+  "required": ["ProjectName", "Review"],
+  "properties": {
+    "ProjectName": {
+      "type": "string",
+      "description": "Name of the project or solution under test"
+    },
+    "ReleaseLabel": {
+      "type": "string",
+      "description": "Release version, sprint, or build identifier (e.g., 'v2.1.0-rc1', 'Sprint 14')"
+    },
+    "DocumentDate": {
+      "type": "string",
+      "description": "Last-saved timestamp, auto-populated by the editor on save"
+    },
+    "Configuration": {
+      "type": "object",
+      "description": "Editor UI state (column widths, etc.). Managed by the editor — do not hand-edit",
+      "properties": {
+        "reviewWidths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Saved column widths for the review table"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Review": {
+      "type": "array",
+      "description": "The checklist items, grouped by FunctionalArea and Subarea",
+      "items": {
+        "type": "object",
+        "required": ["FunctionalArea", "Subarea", "ItemLabel"],
+        "properties": {
+          "FunctionalArea": {
+            "type": "string",
+            "description": "Top-level grouping (e.g., 'Authentication', 'Issue Management'). Rendered as a section header in the editor"
+          },
+          "Subarea": {
+            "type": "string",
+            "description": "Second-level grouping within a functional area (e.g., 'Login', 'Create Issue'). Rendered as a subsection header"
+          },
+          "ItemLabel": {
+            "type": "string",
+            "description": "Short name for this checklist item (e.g., 'Standard Login', 'Validation')"
+          },
+          "HumanAction": {
+            "type": "string",
+            "description": "Step-by-step action the tester should perform"
+          },
+          "Expectation": {
+            "type": "string",
+            "description": "Expected result after performing the action"
+          },
+          "Passes": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this item passed testing. Always false for 'Other' items"
+          },
+          "Feedback": {
+            "type": "string",
+            "default": "",
+            "description": "Tester's observations, notes, or bug description"
+          },
+          "IsOtherItem": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, this is an open-ended feedback row. The editor auto-generates one per subarea if not present. HumanAction and Expectation are ignored"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
