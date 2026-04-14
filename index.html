@@ -245,19 +245,7 @@
 
                 // Initialize defaults
                 if (!currentDocument.Configuration) currentDocument.Configuration = {};
-
-                // Backwards compatibility: Migrate 'Checklist' to 'Review'
-                if (currentDocument.Checklist && !currentDocument.Review) {
-                    currentDocument.Review = currentDocument.Checklist;
-                    delete currentDocument.Checklist;
-                } else if (!currentDocument.Review) {
-                    currentDocument.Review = [];
-                }
-
-                // Migrate OtherIssues into Review as "Other" items if present
-                if (currentDocument.OtherIssues && currentDocument.OtherIssues.length > 0) {
-                    migrateOtherIssues();
-                }
+                if (!currentDocument.Review) currentDocument.Review = [];
 
                 applySavedColumnWidths('checklist-table', 'reviewWidths');
                 renderDocument();
@@ -294,39 +282,12 @@
             }
         });
 
-        // --- Migration: OtherIssues -> inline "Other" items ---
-
-        function migrateOtherIssues() {
-            // Group existing review items by FunctionalArea
-            const areas = new Set(currentDocument.Review.map(r => r.FunctionalArea));
-            const firstArea = areas.values().next().value || "General";
-
-            currentDocument.OtherIssues.forEach(issue => {
-                currentDocument.Review.push({
-                    FunctionalArea: firstArea,
-                    Subarea: "Other",
-                    ItemLabel: `Migrated Issue #${issue.IssueNo}`,
-                    IsOtherItem: true,
-                    HumanAction: "",
-                    Expectation: "",
-                    Passes: issue.Status === "Closed",
-                    Feedback: [
-                        issue.Description,
-                        issue.Log ? issue.Log.map(l => `[${l.Date} ${l.User}] ${l.Entry}`).join('\n') : ''
-                    ].filter(Boolean).join('\n\n')
-                });
-            });
-
-            delete currentDocument.OtherIssues;
-        }
-
         // --- Core Rendering ---
 
         function renderDocument() {
-            // Header: ProjectName | ReleaseLabel (with fallback to old Session fields)
-            const projectName = currentDocument.ProjectName || currentDocument.SessionGoal || 'Untitled Project';
-            const releaseLabel = currentDocument.ReleaseLabel || (currentDocument.Session ? `Session ${currentDocument.Session}` : '');
-            const dateStr = currentDocument.DocumentDate || currentDocument.SessionStartDate || '';
+            const projectName = currentDocument.ProjectName || 'Untitled Project';
+            const releaseLabel = currentDocument.ReleaseLabel || '';
+            const dateStr = currentDocument.DocumentDate || '';
 
             metadataContainer.innerHTML = `
                 <h2>${projectName}${releaseLabel ? ' | ' + releaseLabel : ''}</h2>

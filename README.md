@@ -100,14 +100,6 @@ After a tester completes the checklist and saves, the JSON file contains the res
 
 An AI agent can parse the saved JSON to summarize results, generate bug reports, or update issue trackers.
 
-## Backwards Compatibility
-
-The editor handles older checklist formats:
-
-- **`Checklist` array** — automatically migrated to `Review` on load
-- **`Session` / `SessionGoal` fields** — displayed in the header as a fallback if `ProjectName` / `ReleaseLabel` are absent
-- **`OtherIssues` array** — migrated into `Review` as "Other" items on first load
-
 ## License
 
 MIT
