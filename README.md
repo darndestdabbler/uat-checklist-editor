@@ -15,7 +15,7 @@ Download `index.html` and open it directly in Chrome or Edge. Everything runs cl
 > **Browser compatibility:**
 >
 > - **Chrome/Edge:** full support, including in-place overwrite of the opened file.
-> - **Firefox:** supported with fallback behavior. You can open JSON files and edit normally, but **Save** downloads a JSON file instead of overwriting the original file in place.
+> - **Firefox:** supported with fallback behavior. You can open JSON files and edit normally, but **Save** downloads a JSON file instead of overwriting the original file in place like Chrome & Edge allow.
 > - **Safari:** not currently supported.
 
 ## Features
