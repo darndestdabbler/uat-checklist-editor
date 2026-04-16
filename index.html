@@ -213,12 +213,18 @@
     <!-- Summary Bar -->
     <div class="summary-bar" id="summaryBar"></div>
 
+    <!-- Hidden fallback file input for browsers without File System Access API -->
+    <input id="openFileInput" type="file" accept=".json,application/json" style="display:none;" />
+
     <script>
         let currentDocument = null;
         let fileHandle = null;
+        let currentFileName = '';
+        const supportsFileSystemAccess = typeof window.showOpenFilePicker === 'function';
 
         const openBtn = document.getElementById('openBtn');
         const saveBtn = document.getElementById('saveBtn');
+        const openFileInput = document.getElementById('openFileInput');
         const fileNameDisplay = document.getElementById('fileNameDisplay');
         const tbody = document.getElementById('table-body');
         const metadataContainer = document.getElementById('metadata-container');
@@ -231,36 +237,44 @@
         // --- File System Logic ---
 
         openBtn.addEventListener('click', async () => {
-            try {
-                [fileHandle] = await window.showOpenFilePicker({
-                    types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }],
-                    multiple: false
-                });
+            if (supportsFileSystemAccess) {
+                try {
+                    [fileHandle] = await window.showOpenFilePicker({
+                        types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }],
+                        multiple: false
+                    });
 
-                const file = await fileHandle.getFile();
-                const contents = await file.text();
-
-                currentDocument = JSON.parse(contents);
-                fileNameDisplay.textContent = file.name;
-
-                // Initialize defaults
-                if (!currentDocument.Configuration) currentDocument.Configuration = {};
-                if (!currentDocument.Review) currentDocument.Review = [];
-
-                applySavedColumnWidths('checklist-table', 'reviewWidths');
-                renderDocument();
-                saveBtn.disabled = false;
-
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    alert("Error opening or parsing file. Ensure it is valid JSON.");
-                    console.error(error);
+                    const file = await fileHandle.getFile();
+                    const contents = await file.text();
+                    loadDocumentFromText(contents, file.name, fileHandle);
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        alert("Error opening or parsing file. Ensure it is valid JSON.");
+                        console.error(error);
+                    }
                 }
+            } else {
+                openFileInput.value = '';
+                openFileInput.click();
+            }
+        });
+
+        openFileInput.addEventListener('change', async (event) => {
+            const selectedFile = event.target.files && event.target.files[0];
+            if (!selectedFile) return;
+
+            try {
+                const contents = await selectedFile.text();
+                loadDocumentFromText(contents, selectedFile.name, null);
+            } catch (error) {
+                alert("Error opening or parsing file. Ensure it is valid JSON.");
+                console.error(error);
             }
         });
 
         saveBtn.addEventListener('click', async () => {
-            if (!currentDocument || !fileHandle) return;
+            if (!currentDocument) return;
+
             try {
                 currentDocument.DocumentDate = new Date().toLocaleString('en-US');
                 saveColumnWidthsToConfig('checklist-table', 'reviewWidths');
@@ -272,15 +286,53 @@
                 }
 
                 const jsonString = JSON.stringify(cleanDoc, null, 2);
-                const writable = await fileHandle.createWritable();
-                await writable.write(jsonString);
-                await writable.close();
-                alert('File saved successfully!');
+
+                if (fileHandle && supportsFileSystemAccess) {
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(jsonString);
+                    await writable.close();
+                    alert('File saved successfully!');
+                } else {
+                    downloadJsonFile(jsonString, getDownloadFileName(currentFileName));
+                    alert('File downloaded. In Firefox, saving creates a downloaded JSON file.');
+                }
             } catch (error) {
                 alert("Failed to save the file.");
                 console.error("Save Error:", error);
             }
         });
+
+        function loadDocumentFromText(contents, name, handle) {
+            currentDocument = JSON.parse(contents);
+            fileHandle = handle;
+            currentFileName = name || 'checklist.json';
+            fileNameDisplay.textContent = currentFileName;
+
+            // Initialize defaults
+            if (!currentDocument.Configuration) currentDocument.Configuration = {};
+            if (!currentDocument.Review) currentDocument.Review = [];
+
+            applySavedColumnWidths('checklist-table', 'reviewWidths');
+            renderDocument();
+            saveBtn.disabled = false;
+        }
+
+        function getDownloadFileName(name) {
+            if (!name) return 'checklist.json';
+            return name.toLowerCase().endsWith('.json') ? name : `${name}.json`;
+        }
+
+        function downloadJsonFile(jsonString, fileName) {
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
 
         // --- Core Rendering ---
 
