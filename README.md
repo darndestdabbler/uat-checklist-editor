@@ -12,7 +12,11 @@ Visit **https://darndestdabbler.github.io/uat-checklist-editor/** in Chrome or E
 
 Download `index.html` and open it directly in Chrome or Edge. Everything runs client-side.
 
-> **Browser requirement:** The editor uses the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) for opening and saving files. This works in **Chrome** and **Edge**. Firefox and Safari are not currently supported.
+> **Browser compatibility:**
+>
+> - **Chrome/Edge:** full support, including in-place overwrite of the opened file.
+> - **Firefox:** supported with fallback behavior. You can open JSON files and edit normally, but **Save** downloads a JSON file instead of overwriting the original file in place like Chrome & Edge allow.
+> - **Safari:** not currently supported.
 
 ## Features
 
@@ -24,7 +28,8 @@ Download `index.html` and open it directly in Chrome or Edge. Everything runs cl
 - **"Other" rows** — each subarea includes an open-ended feedback row for issues that don't fit a specific test case
 - **Summary bar** — live count of total items, passed items, and items with feedback
 - **Resizable columns** — drag column borders to adjust widths (persisted in the JSON file)
-- **Direct file save** — overwrites the original JSON file in place (no download dialogs)
+- **Direct file save (Chrome/Edge)** — overwrites the original JSON file in place (no download dialogs)
+- **Download save fallback (Firefox)** — saves by downloading an updated JSON file
 
 ## JSON Data Format
 
