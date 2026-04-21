@@ -51,11 +51,72 @@
           },
           "HumanAction": {
             "type": "string",
-            "description": "Step-by-step action the tester should perform"
+            "description": "Step-by-step action the tester should perform. Used when Steps is absent; superseded by Steps when present"
           },
           "Expectation": {
             "type": "string",
-            "description": "Expected result after performing the action"
+            "description": "Expected result after performing the action. Used when Steps is absent"
+          },
+          "Steps": {
+            "type": "array",
+            "description": "Optional structured steps. When present, supersedes HumanAction/Expectation for display. Each step has an action and a list of verifications. Backward compatibility: when absent, the editor falls back to HumanAction/Expectation",
+            "items": {
+              "type": "object",
+              "required": ["StepNumber", "Action"],
+              "properties": {
+                "StepNumber": {
+                  "type": "integer",
+                  "description": "Sequential step number (1, 2, 3, ...)"
+                },
+                "Action": {
+                  "type": "string",
+                  "description": "What the tester does. Supports {{VariableName}} placeholders resolved against TestData"
+                },
+                "Verifications": {
+                  "type": "array",
+                  "description": "Checks the tester performs after the action. Rendered as an indented bullet list under the step",
+                  "items": {
+                    "type": "object",
+                    "required": ["Text"],
+                    "properties": {
+                      "Text": {
+                        "type": "string",
+                        "description": "Human-readable verification description"
+                      },
+                      "VerificationMethod": {
+                        "type": "string",
+                        "enum": ["ui", "api", "sql"],
+                        "default": "ui",
+                        "description": "How the verification is performed. Defaults to 'ui' when absent. Non-ui methods render with a small badge"
+                      },
+                      "Query": {
+                        "type": "string",
+                        "description": "SQL query for 'sql' verifications. Displayed inline so the tester can run it"
+                      },
+                      "ExpectedValue": {
+                        "description": "Expected value the verification should yield. Type varies by verification"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "TestData": {
+            "type": "object",
+            "description": "Optional map of {{VariableName}} substitutions applied to each step's Action text. Lets the same checklist run against different environments without editing step text",
+            "additionalProperties": true
+          },
+          "E2ETestReference": {
+            "type": "string",
+            "description": "Optional identifier of the automated E2E test that mirrors these steps (e.g., 'ClassName.MethodName'). Makes coverage auditable and is consumed by the uat-coverage-review task"
+          },
+          "IsJudgmentItem": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, marks a cosmetic/UX item that cannot be automated and is exempt from the E2E coverage requirement. Editor renders a 'Human Judgment' badge. The uat-coverage-review task skips these items"
           },
           "Passes": {
             "type": "boolean",

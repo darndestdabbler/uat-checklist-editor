@@ -1,704 +1,867 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UAT CheckList Editor</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            margin: 0;
-            color: #333;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAT CheckList Editor</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    color: #333;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
-        /* --- Top Bar --- */
-        .top-bar {
-            padding: 12px 20px;
-            background-color: #2c3e50;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        .top-bar h1 { margin: 0; font-size: 18px; font-weight: 600; }
-        .top-bar .controls { display: flex; gap: 10px; align-items: center; }
-        .top-bar button {
-            padding: 6px 14px; font-size: 13px; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.3); background-color: rgba(255,255,255,0.1);
-            color: #fff; border-radius: 4px;
-        }
-        .top-bar button:hover:not(:disabled) { background-color: rgba(255,255,255,0.2); }
-        .top-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .top-bar .file-name { font-size: 13px; color: rgba(255,255,255,0.7); font-style: italic; }
+/* --- Top Bar --- */
+.top-bar {
+    padding: 12px 20px;
+    background-color: #2c3e50;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+.top-bar h1 { margin: 0; font-size: 18px; font-weight: 600; }
+.top-bar .controls { display: flex; gap: 10px; align-items: center; }
+.top-bar button {
+    padding: 6px 14px; font-size: 13px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.3); background-color: rgba(255,255,255,0.1);
+    color: #fff; border-radius: 4px;
+}
+.top-bar button:hover:not(:disabled) { background-color: rgba(255,255,255,0.2); }
+.top-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
+.top-bar .file-name { font-size: 13px; color: rgba(255,255,255,0.7); font-style: italic; }
 
-        /* --- Metadata Header --- */
-        #metadata-container {
-            padding: 10px 20px;
-            background-color: #e9ecef;
-            border-bottom: 1px solid #ccc;
-            display: none;
-            flex-shrink: 0;
-        }
-        #metadata-container h2 { margin: 0; font-size: 16px; color: #2c3e50; }
-        #metadata-container p { margin: 4px 0 0; font-size: 13px; color: #555; }
+/* --- Metadata Header --- */
+#metadata-container {
+    padding: 10px 20px;
+    background-color: #e9ecef;
+    border-bottom: 1px solid #ccc;
+    display: none;
+    flex-shrink: 0;
+}
+#metadata-container h2 { margin: 0; font-size: 16px; color: #2c3e50; }
+#metadata-container p { margin: 4px 0 0; font-size: 13px; color: #555; }
 
-        /* --- Main Layout: Sidebar + Content --- */
-        .main-layout {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+/* --- Main Layout: Sidebar + Content --- */
+.main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
 
-        /* --- Left Navigation Pane --- */
-        .nav-pane {
-            width: 260px;
-            min-width: 200px;
-            background-color: #f8f9fa;
-            border-right: 1px solid #ddd;
-            overflow-y: auto;
-            flex-shrink: 0;
-            display: none;
-            padding: 10px 0;
-        }
-        .nav-pane h3 {
-            margin: 0; padding: 8px 16px; font-size: 12px; text-transform: uppercase;
-            color: #888; letter-spacing: 0.5px;
-        }
-        .nav-area {
-            border-bottom: 1px solid #eee;
-        }
-        .nav-area-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 16px; cursor: pointer; font-weight: 600; font-size: 14px;
-            color: #2c3e50; user-select: none;
-        }
-        .nav-area-header:hover { background-color: #e9ecef; }
-        .nav-area-header .arrow {
-            font-size: 10px; transition: transform 0.2s; color: #999;
-        }
-        .nav-area-header.expanded .arrow { transform: rotate(90deg); }
-        .nav-subareas {
-            display: none; padding-bottom: 4px;
-        }
-        .nav-subareas.expanded { display: block; }
-        .nav-subarea-link {
-            display: block; padding: 6px 16px 6px 28px; font-size: 13px;
-            color: #555; text-decoration: none; cursor: pointer;
-        }
-        .nav-subarea-link:hover { background-color: #e2e6ea; color: #2c3e50; }
-        .nav-subarea-link.active { background-color: #d4e6f1; color: #1a5276; font-weight: 600; }
+/* --- Left Navigation Pane --- */
+.nav-pane {
+    width: 260px;
+    min-width: 200px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: none;
+    padding: 10px 0;
+}
+.nav-pane h3 {
+    margin: 0; padding: 8px 16px; font-size: 12px; text-transform: uppercase;
+    color: #888; letter-spacing: 0.5px;
+}
+.nav-area {
+    border-bottom: 1px solid #eee;
+}
+.nav-area-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; cursor: pointer; font-weight: 600; font-size: 14px;
+    color: #2c3e50; user-select: none;
+}
+.nav-area-header:hover { background-color: #e9ecef; }
+.nav-area-header .arrow {
+    font-size: 10px; transition: transform 0.2s; color: #999;
+}
+.nav-area-header.expanded .arrow { transform: rotate(90deg); }
+.nav-subareas {
+    display: none; padding-bottom: 4px;
+}
+.nav-subareas.expanded { display: block; }
+.nav-subarea-link {
+    display: block; padding: 6px 16px 6px 28px; font-size: 13px;
+    color: #555; text-decoration: none; cursor: pointer;
+}
+.nav-subarea-link:hover { background-color: #e2e6ea; color: #2c3e50; }
+.nav-subarea-link.active { background-color: #d4e6f1; color: #1a5276; font-weight: 600; }
 
-        /* --- Content Area --- */
-        .content-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
+/* --- Content Area --- */
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
 
-        /* --- Table Styles --- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-            vertical-align: top;
-            word-wrap: break-word;
-        }
-        th {
-            background-color: #f8f9fa;
-            position: sticky; top: 0; z-index: 2;
-        }
+/* --- Table Styles --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+}
+th {
+    background-color: #f8f9fa;
+    position: sticky; top: 0; z-index: 2;
+    text-align: center;
+}
 
-        /* --- Group Headers --- */
-        .area-header-row td {
-            background-color: #2c3e50;
-            color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-            padding: 10px 12px;
-            border-color: #2c3e50;
-        }
-        .subarea-header-row td {
-            background-color: #d5e8d4;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 12px;
-            color: #2c3e50;
-            border-color: #b8d4a8;
-        }
-        .other-row td {
-            background-color: #fff8e1;
-        }
+/* --- Group Headers --- */
+.area-header-row td {
+    background-color: #2c3e50;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 10px 12px;
+    border-color: #2c3e50;
+}
+.subarea-header-row td {
+    background-color: #d5e8d4;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 12px;
+    color: #2c3e50;
+    border-color: #b8d4a8;
+}
+.other-row td {
+    background-color: #fff8e1;
+}
 
-        /* --- Inputs within tables --- */
-        textarea, input[type="text"] {
-            width: 100%; box-sizing: border-box; padding: 8px; font-family: inherit; font-size: 13px;
-        }
-        textarea { min-height: 40px; resize: none; overflow: hidden; }
-        select { padding: 6px; width: 100%; }
-        .checkbox-cell { text-align: center; vertical-align: middle; }
-        input[type="checkbox"] { transform: scale(1.5); cursor: pointer; }
+/* --- Inputs within tables --- */
+textarea, input[type="text"] {
+    width: 100%; box-sizing: border-box; padding: 8px; font-family: inherit; font-size: 13px;
+}
+textarea { min-height: 40px; resize: none; overflow: hidden; }
+select { padding: 6px; width: 100%; }
+.checkbox-cell { text-align: center; vertical-align: middle; }
+input[type="checkbox"] { transform: scale(1.5); cursor: pointer; }
 
-        /* --- Column Resizers --- */
-        .resizer {
-            position: absolute; top: 0; right: 0; width: 5px;
-            cursor: col-resize; user-select: none; height: 100%; background-color: transparent;
-        }
-        .resizer:hover, .resizing { background-color: #a0a0a0; }
-        th { position: relative; user-select: none; }
+/* --- Column Resizers --- */
+.resizer {
+    position: absolute; top: 0; right: 0; width: 5px;
+    cursor: col-resize; user-select: none; height: 100%; background-color: transparent;
+}
+.resizer:hover, .resizing { background-color: #a0a0a0; }
+th { position: relative; user-select: none; }
 
-        /* --- Summary Bar --- */
-        .summary-bar {
-            display: none;
-            padding: 8px 20px;
-            background-color: #f5f5f5;
-            border-top: 1px solid #ddd;
-            font-size: 13px;
-            color: #555;
-            flex-shrink: 0;
-            gap: 20px;
-        }
-    </style>
+/* --- Summary Bar --- */
+.summary-bar {
+    display: none;
+    padding: 8px 20px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    font-size: 13px;
+    color: #555;
+    flex-shrink: 0;
+    gap: 20px;
+}
+
+/* --- Human Judgment badge --- */
+.judgment-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: #8a6d00;
+    background-color: #fff3cd;
+    border: 1px solid #ffe69c;
+    border-radius: 10px;
+    vertical-align: middle;
+    text-transform: uppercase;
+}
+
+/* --- E2E test reference --- */
+.e2e-ref {
+    display: block;
+    margin-top: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: #888;
+    word-break: break-all;
+}
+.e2e-ref-label {
+    font-weight: 600;
+    color: #999;
+}
+
+/* --- Structured Steps rendering --- */
+.step-list {
+    margin: 0;
+    padding-left: 20px;
+}
+.step-list > li {
+    margin-bottom: 8px;
+}
+.step-list > li:last-child {
+    margin-bottom: 0;
+}
+.step-action {
+    display: block;
+}
+.verification-list {
+    margin: 4px 0 0 0;
+    padding-left: 18px;
+    list-style-type: disc;
+    color: #555;
+}
+.verification-list > li {
+    font-size: 14px;
+    font-style: italic;
+    margin-bottom: 2px;
+}
+.verif-method-badge {
+    display: inline-block;
+    margin-right: 4px;
+    padding: 0 5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #2c3e50;
+    background-color: #e3e8ec;
+    border-radius: 3px;
+    text-transform: uppercase;
+    vertical-align: baseline;
+}
+.sql-query {
+    display: block;
+    margin-top: 3px;
+    padding: 4px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: #2c3e50;
+    background-color: #f4f6f8;
+    border: 1px solid #e1e4e8;
+    border-radius: 3px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.expected-value {
+    color: #666;
+    font-style: italic;
+    margin-left: 4px;
+}
+.testdata-missing {
+    color: #c0392b;
+    font-weight: 600;
+}
+</style>
 </head>
 <body>
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <h1>UAT CheckList Editor</h1>
-        <div class="controls">
-            <span class="file-name" id="fileNameDisplay">No file selected</span>
-            <button id="openBtn">Open JSON</button>
-            <button id="saveBtn" disabled>Save</button>
-        </div>
+<!-- Top Bar -->
+<div class="top-bar">
+    <h1>UAT CheckList Editor</h1>
+    <div class="controls">
+        <span class="file-name" id="fileNameDisplay">No file selected</span>
+        <button id="openBtn">Open JSON</button>
+        <button id="saveBtn" disabled>Save</button>
     </div>
+</div>
 
-    <!-- Metadata Header -->
-    <div id="metadata-container"></div>
+<!-- Metadata Header -->
+<div id="metadata-container"></div>
 
-    <!-- Main Layout -->
-    <div class="main-layout">
-        <!-- Left Navigation -->
-        <nav class="nav-pane" id="navPane">
-            <h3>Navigation</h3>
-            <div id="navTree"></div>
-        </nav>
+<!-- Main Layout -->
+<div class="main-layout">
+    <!-- Left Navigation -->
+    <nav class="nav-pane" id="navPane">
+        <h3>Navigation</h3>
+        <div id="navTree"></div>
+    </nav>
 
-        <!-- Content -->
-        <div class="content-area" id="contentArea">
-            <p style="color:#999; text-align:center; margin-top:80px;">Open a JSON checklist file to begin.</p>
-            <table id="checklist-table" style="display:none;">
-                <thead>
-                    <tr>
-                        <th style="width: 6%;">Item #</th>
-                        <th style="width: 14%;">Item Label</th>
-                        <th style="width: 28%;">Action &amp; Expectation</th>
-                        <th style="width: 8%;">Passes?</th>
-                        <th style="width: 44%;">Feedback</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
-        </div>
+    <!-- Content -->
+    <div class="content-area" id="contentArea">
+        <p style="color:#999; text-align:center; margin-top:80px;">Open a JSON checklist file to begin.</p>
+        <table id="checklist-table" style="display:none;">
+            <thead>
+                <tr>
+                    <th style="width: 6%;">Item #</th>
+                    <th style="width: 14%;">Item Label</th>
+                    <th style="width: 36%;">Action &amp; Expectation</th>
+                    <th style="width: 8%;">Passes?</th>
+                    <th style="width: 36%;">Feedback</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
     </div>
+</div>
 
-    <!-- Summary Bar -->
-    <div class="summary-bar" id="summaryBar"></div>
+<!-- Summary Bar -->
+<div class="summary-bar" id="summaryBar"></div>
 
-    <!-- Hidden fallback file input for browsers without File System Access API -->
-    <input id="openFileInput" type="file" accept=".json,application/json" style="display:none;" />
+<!-- Hidden fallback file input for browsers without File System Access API -->
+<input id="openFileInput" type="file" accept=".json,application/json" style="display:none;" />
 
-    <script>
-        let currentDocument = null;
-        let fileHandle = null;
-        let currentFileName = '';
-        const supportsFileSystemAccess = typeof window.showOpenFilePicker === 'function';
+<script>
+let currentDocument = null;
+let fileHandle = null;
+let currentFileName = '';
+const supportsFileSystemAccess = typeof window.showOpenFilePicker === 'function';
 
-        const openBtn = document.getElementById('openBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const openFileInput = document.getElementById('openFileInput');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const tbody = document.getElementById('table-body');
-        const metadataContainer = document.getElementById('metadata-container');
-        const navPane = document.getElementById('navPane');
-        const navTree = document.getElementById('navTree');
-        const contentArea = document.getElementById('contentArea');
-        const checklistTable = document.getElementById('checklist-table');
-        const summaryBar = document.getElementById('summaryBar');
+const openBtn = document.getElementById('openBtn');
+const saveBtn = document.getElementById('saveBtn');
+const openFileInput = document.getElementById('openFileInput');
+const fileNameDisplay = document.getElementById('fileNameDisplay');
+const tbody = document.getElementById('table-body');
+const metadataContainer = document.getElementById('metadata-container');
+const navPane = document.getElementById('navPane');
+const navTree = document.getElementById('navTree');
+const contentArea = document.getElementById('contentArea');
+const checklistTable = document.getElementById('checklist-table');
+const summaryBar = document.getElementById('summaryBar');
 
-        // --- File System Logic ---
-
-        openBtn.addEventListener('click', async () => {
-            if (supportsFileSystemAccess) {
-                try {
-                    [fileHandle] = await window.showOpenFilePicker({
-                        types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }],
-                        multiple: false
-                    });
-
-                    const file = await fileHandle.getFile();
-                    const contents = await file.text();
-                    loadDocumentFromText(contents, file.name, fileHandle);
-                } catch (error) {
-                    if (error.name !== 'AbortError') {
-                        alert("Error opening or parsing file. Ensure it is valid JSON.");
-                        console.error(error);
-                    }
-                }
-            } else {
-                openFileInput.value = '';
-                openFileInput.click();
-            }
-        });
-
-        openFileInput.addEventListener('change', async (event) => {
-            const selectedFile = event.target.files && event.target.files[0];
-            if (!selectedFile) return;
-
-            try {
-                const contents = await selectedFile.text();
-                loadDocumentFromText(contents, selectedFile.name, null);
-            } catch (error) {
+// --- File System Logic ---
+openBtn.addEventListener('click', async () => {
+    if (supportsFileSystemAccess) {
+        try {
+            [fileHandle] = await window.showOpenFilePicker({
+                types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }],
+                multiple: false
+            });
+            const file = await fileHandle.getFile();
+            const contents = await file.text();
+            loadDocumentFromText(contents, file.name, fileHandle);
+        } catch (error) {
+            if (error.name !== 'AbortError') {
                 alert("Error opening or parsing file. Ensure it is valid JSON.");
                 console.error(error);
             }
-        });
+        }
+    } else {
+        openFileInput.value = '';
+        openFileInput.click();
+    }
+});
 
-        saveBtn.addEventListener('click', async () => {
-            if (!currentDocument) return;
+openFileInput.addEventListener('change', async (event) => {
+    const selectedFile = event.target.files && event.target.files[0];
+    if (!selectedFile) return;
+    try {
+        const contents = await selectedFile.text();
+        loadDocumentFromText(contents, selectedFile.name, null);
+    } catch (error) {
+        alert("Error opening or parsing file. Ensure it is valid JSON.");
+        console.error(error);
+    }
+});
 
-            try {
-                currentDocument.DocumentDate = new Date().toLocaleString('en-US');
-                saveColumnWidthsToConfig('checklist-table', 'reviewWidths');
+saveBtn.addEventListener('click', async () => {
+    if (!currentDocument) return;
+    try {
+        currentDocument.DocumentDate = new Date().toLocaleString('en-US');
+        saveColumnWidthsToConfig('checklist-table', 'reviewWidths');
 
-                // Strip internal _index properties before saving
-                const cleanDoc = JSON.parse(JSON.stringify(currentDocument));
-                if (cleanDoc.Review) {
-                    cleanDoc.Review.forEach(item => delete item._index);
-                }
+        // Strip internal _index properties before saving
+        const cleanDoc = JSON.parse(JSON.stringify(currentDocument));
+        if (cleanDoc.Review) {
+            cleanDoc.Review.forEach(item => delete item._index);
+        }
 
-                const jsonString = JSON.stringify(cleanDoc, null, 2);
+        const jsonString = JSON.stringify(cleanDoc, null, 2);
 
-                if (fileHandle && supportsFileSystemAccess) {
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(jsonString);
-                    await writable.close();
-                    alert('File saved successfully!');
-                } else {
-                    downloadJsonFile(jsonString, getDownloadFileName(currentFileName));
-                    alert('File downloaded. In Firefox, saving creates a downloaded JSON file.');
-                }
-            } catch (error) {
-                alert("Failed to save the file.");
-                console.error("Save Error:", error);
+        if (fileHandle && supportsFileSystemAccess) {
+            const writable = await fileHandle.createWritable();
+            await writable.write(jsonString);
+            await writable.close();
+            alert('File saved successfully!');
+        } else {
+            downloadJsonFile(jsonString, getDownloadFileName(currentFileName));
+            alert('File downloaded. In Firefox, saving creates a downloaded JSON file.');
+        }
+    } catch (error) {
+        alert("Failed to save the file.");
+        console.error("Save Error:", error);
+    }
+});
+
+function loadDocumentFromText(contents, name, handle) {
+    currentDocument = JSON.parse(contents);
+    fileHandle = handle;
+    currentFileName = name || 'checklist.json';
+    fileNameDisplay.textContent = currentFileName;
+
+    // Initialize defaults
+    if (!currentDocument.Configuration) currentDocument.Configuration = {};
+    if (!currentDocument.Review) currentDocument.Review = [];
+
+    applySavedColumnWidths('checklist-table', 'reviewWidths');
+    renderDocument();
+    saveBtn.disabled = false;
+}
+
+function getDownloadFileName(name) {
+    if (!name) return 'checklist.json';
+    return name.toLowerCase().endsWith('.json') ? name : `${name}.json`;
+}
+
+function downloadJsonFile(jsonString, fileName) {
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// --- Core Rendering ---
+function renderDocument() {
+    const projectName = currentDocument.ProjectName || 'Untitled Project';
+    const releaseLabel = currentDocument.ReleaseLabel || '';
+    const dateStr = currentDocument.DocumentDate || '';
+
+    metadataContainer.innerHTML = `
+        <h2>${projectName}${releaseLabel ? ' | ' + releaseLabel : ''}</h2>
+        ${dateStr ? `<p><strong>Last Updated:</strong> ${dateStr}</p>` : ''}
+    `;
+    metadataContainer.style.display = 'block';
+    checklistTable.style.display = 'table';
+    navPane.style.display = 'block';
+    contentArea.querySelector('p')?.remove();
+
+    renderReviewTable();
+    renderNavTree();
+    updateSummary();
+    initResizers('checklist-table');
+}
+
+// --- Build grouped structure ---
+function buildGroupedItems() {
+    const groups = new Map(); // area -> Map(subarea -> items[])
+    currentDocument.Review.forEach((item, index) => {
+        const area = item.FunctionalArea || 'Uncategorized';
+        const sub = item.Subarea || 'General';
+        if (!groups.has(area)) groups.set(area, new Map());
+        const areaMap = groups.get(area);
+        if (!areaMap.has(sub)) areaMap.set(sub, []);
+        areaMap.get(sub).push({ ...item, _index: index });
+    });
+    return groups;
+}
+
+// --- Review Table ---
+function renderReviewTable() {
+    tbody.innerHTML = '';
+    const groups = buildGroupedItems();
+    let itemCounter = 0;
+
+    groups.forEach((subareas, areaName) => {
+        // Area header row
+        const areaId = toAnchorId(areaName);
+        const areaRow = document.createElement('tr');
+        areaRow.className = 'area-header-row';
+        areaRow.id = areaId;
+        const areaCell = document.createElement('td');
+        areaCell.colSpan = 5;
+        areaCell.textContent = areaName;
+        areaRow.appendChild(areaCell);
+        tbody.appendChild(areaRow);
+
+        subareas.forEach((items, subareaName) => {
+            // Subarea header row
+            const subId = toAnchorId(areaName + '-' + subareaName);
+            const subRow = document.createElement('tr');
+            subRow.className = 'subarea-header-row';
+            subRow.id = subId;
+            const subCell = document.createElement('td');
+            subCell.colSpan = 5;
+            subCell.textContent = subareaName;
+            subRow.appendChild(subCell);
+            tbody.appendChild(subRow);
+
+            // Separate regular items and "Other" items
+            const regularItems = items.filter(i => !i.IsOtherItem);
+            const otherItems = items.filter(i => i.IsOtherItem);
+
+            // Regular checklist items
+            regularItems.forEach(item => {
+                itemCounter++;
+                tbody.appendChild(createItemRow(item, itemCounter));
+            });
+
+            // "Other" feedback items
+            otherItems.forEach(item => {
+                itemCounter++;
+                tbody.appendChild(createOtherRow(item, itemCounter));
+            });
+
+            // If no "Other" row exists for this subarea, add a blank one
+            if (otherItems.length === 0) {
+                const newOtherItem = {
+                    FunctionalArea: areaName,
+                    Subarea: subareaName,
+                    ItemLabel: "Other",
+                    IsOtherItem: true,
+                    HumanAction: "",
+                    Expectation: "",
+                    Passes: false,
+                    Feedback: ""
+                };
+                currentDocument.Review.push(newOtherItem);
+                const newIndex = currentDocument.Review.length - 1;
+                newOtherItem._index = newIndex;
+                itemCounter++;
+                tbody.appendChild(createOtherRow(newOtherItem, itemCounter));
             }
         });
+    });
+}
 
-        function loadDocumentFromText(contents, name, handle) {
-            currentDocument = JSON.parse(contents);
-            fileHandle = handle;
-            currentFileName = name || 'checklist.json';
-            fileNameDisplay.textContent = currentFileName;
+function createItemRow(item, number) {
+    const tr = document.createElement('tr');
+    const idx = item._index;
 
-            // Initialize defaults
-            if (!currentDocument.Configuration) currentDocument.Configuration = {};
-            if (!currentDocument.Review) currentDocument.Review = [];
+    // Item #
+    const tdNum = document.createElement('td');
+    tdNum.textContent = number;
+    tdNum.style.textAlign = 'center';
+    tdNum.style.color = '#888';
 
-            applySavedColumnWidths('checklist-table', 'reviewWidths');
-            renderDocument();
-            saveBtn.disabled = false;
-        }
+    // Item Label (with optional Human Judgment badge and E2E reference)
+    const tdLabel = document.createElement('td');
+    const labelText = item.ItemLabel || item.Subarea || '';
+    const judgmentBadge = item.IsJudgmentItem
+        ? '<span class="judgment-badge" title="Exempt from E2E coverage; human judgment required">Human Judgment</span>'
+        : '';
+    const e2eRef = item.E2ETestReference
+        ? '<span class="e2e-ref"><span class="e2e-ref-label">E2E:</span> ' + escapeHtml(item.E2ETestReference) + '</span>'
+        : '';
+    tdLabel.innerHTML = '<strong>' + escapeHtml(labelText) + '</strong>' + judgmentBadge + e2eRef;
 
-        function getDownloadFileName(name) {
-            if (!name) return 'checklist.json';
-            return name.toLowerCase().endsWith('.json') ? name : `${name}.json`;
-        }
+    // Action & Expectation
+    // When Steps is a non-empty array, render the structured step list.
+    // Otherwise fall back to the existing HumanAction / Expectation display.
+    const tdAction = document.createElement('td');
+    const hasSteps = Array.isArray(item.Steps) && item.Steps.length > 0;
+    if (hasSteps) {
+        tdAction.innerHTML = renderStepsHtml(item.Steps, item.TestData);
+    } else {
+        tdAction.innerHTML = '<strong>Action:</strong> ' + escapeHtml(item.HumanAction || '')
+            + '<br><br><strong>Expects:</strong> ' + escapeHtml(item.Expectation || '');
+    }
 
-        function downloadJsonFile(jsonString, fileName) {
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
+    // Passes?
+    const tdPasses = document.createElement('td');
+    tdPasses.className = 'checkbox-cell';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = item.Passes;
+    checkbox.addEventListener('change', (e) => {
+        currentDocument.Review[idx].Passes = e.target.checked;
+        updateSummary();
+    });
+    tdPasses.appendChild(checkbox);
+
+    // Feedback
+    const tdFeedback = document.createElement('td');
+    const textarea = document.createElement('textarea');
+    textarea.value = item.Feedback || "";
+    textarea.placeholder = "Enter feedback...";
+    textarea.addEventListener('input', function(e) {
+        currentDocument.Review[idx].Feedback = e.target.value;
+        autoResizeTextarea(this);
+    });
+    tdFeedback.appendChild(textarea);
+
+    tr.append(tdNum, tdLabel, tdAction, tdPasses, tdFeedback);
+    requestAnimationFrame(() => autoResizeTextarea(textarea));
+    return tr;
+}
+
+function createOtherRow(item, number) {
+    const tr = document.createElement('tr');
+    tr.className = 'other-row';
+    const idx = item._index;
+
+    // Item #
+    const tdNum = document.createElement('td');
+    tdNum.textContent = number;
+    tdNum.style.textAlign = 'center';
+    tdNum.style.color = '#888';
+
+    // Item Label
+    const tdLabel = document.createElement('td');
+    tdLabel.innerHTML = `<em>${item.ItemLabel || 'Other'}</em>`;
+
+    // Action & Expectation (empty for Other, spans as feedback prompt)
+    const tdAction = document.createElement('td');
+    tdAction.innerHTML = '<span style="color:#999; font-size:12px;">Use this row for additional observations or feedback for this area.</span>';
+
+    // Passes? (disabled for Other rows)
+    const tdPasses = document.createElement('td');
+    tdPasses.className = 'checkbox-cell';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = false;
+    checkbox.disabled = true;
+    checkbox.style.opacity = '0.3';
+    checkbox.style.cursor = 'default';
+    currentDocument.Review[idx].Passes = false;
+    tdPasses.appendChild(checkbox);
+
+    // Feedback
+    const tdFeedback = document.createElement('td');
+    const textarea = document.createElement('textarea');
+    textarea.value = item.Feedback || "";
+    textarea.placeholder = "Additional observations, issues, or feedback...";
+    textarea.addEventListener('input', function(e) {
+        currentDocument.Review[idx].Feedback = e.target.value;
+        autoResizeTextarea(this);
+    });
+    tdFeedback.appendChild(textarea);
+
+    tr.append(tdNum, tdLabel, tdAction, tdPasses, tdFeedback);
+    requestAnimationFrame(() => autoResizeTextarea(textarea));
+    return tr;
+}
+
+// --- Navigation Tree ---
+function renderNavTree() {
+    navTree.innerHTML = '';
+    const groups = buildGroupedItems();
+
+    groups.forEach((subareas, areaName) => {
+        const areaDiv = document.createElement('div');
+        areaDiv.className = 'nav-area';
+
+        // Area header (accordion toggle)
+        const header = document.createElement('div');
+        header.className = 'nav-area-header';
+        header.innerHTML = `<span>${areaName}</span><span class="arrow">&#9654;</span>`;
+        header.addEventListener('click', () => {
+            header.classList.toggle('expanded');
+            subList.classList.toggle('expanded');
+        });
+
+        // Subarea list
+        const subList = document.createElement('div');
+        subList.className = 'nav-subareas';
+        subareas.forEach((_, subareaName) => {
             const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        // --- Core Rendering ---
-
-        function renderDocument() {
-            const projectName = currentDocument.ProjectName || 'Untitled Project';
-            const releaseLabel = currentDocument.ReleaseLabel || '';
-            const dateStr = currentDocument.DocumentDate || '';
-
-            metadataContainer.innerHTML = `
-                <h2>${projectName}${releaseLabel ? ' | ' + releaseLabel : ''}</h2>
-                ${dateStr ? `<p><strong>Last Updated:</strong> ${dateStr}</p>` : ''}
-            `;
-            metadataContainer.style.display = 'block';
-
-            checklistTable.style.display = 'table';
-            navPane.style.display = 'block';
-            contentArea.querySelector('p')?.remove();
-
-            renderReviewTable();
-            renderNavTree();
-            updateSummary();
-            initResizers('checklist-table');
-        }
-
-        // --- Build grouped structure ---
-
-        function buildGroupedItems() {
-            const groups = new Map(); // area -> Map(subarea -> items[])
-
-            currentDocument.Review.forEach((item, index) => {
-                const area = item.FunctionalArea || 'Uncategorized';
-                const sub = item.Subarea || 'General';
-
-                if (!groups.has(area)) groups.set(area, new Map());
-                const areaMap = groups.get(area);
-                if (!areaMap.has(sub)) areaMap.set(sub, []);
-                areaMap.get(sub).push({ ...item, _index: index });
-            });
-
-            return groups;
-        }
-
-        // --- Review Table ---
-
-        function renderReviewTable() {
-            tbody.innerHTML = '';
-            const groups = buildGroupedItems();
-            let itemCounter = 0;
-
-            groups.forEach((subareas, areaName) => {
-                // Area header row
-                const areaId = toAnchorId(areaName);
-                const areaRow = document.createElement('tr');
-                areaRow.className = 'area-header-row';
-                areaRow.id = areaId;
-                const areaCell = document.createElement('td');
-                areaCell.colSpan = 5;
-                areaCell.textContent = areaName;
-                areaRow.appendChild(areaCell);
-                tbody.appendChild(areaRow);
-
-                subareas.forEach((items, subareaName) => {
-                    // Subarea header row
-                    const subId = toAnchorId(areaName + '-' + subareaName);
-                    const subRow = document.createElement('tr');
-                    subRow.className = 'subarea-header-row';
-                    subRow.id = subId;
-                    const subCell = document.createElement('td');
-                    subCell.colSpan = 5;
-                    subCell.textContent = subareaName;
-                    subRow.appendChild(subCell);
-                    tbody.appendChild(subRow);
-
-                    // Separate regular items and "Other" items
-                    const regularItems = items.filter(i => !i.IsOtherItem);
-                    const otherItems = items.filter(i => i.IsOtherItem);
-
-                    // Regular checklist items
-                    regularItems.forEach(item => {
-                        itemCounter++;
-                        tbody.appendChild(createItemRow(item, itemCounter));
-                    });
-
-                    // "Other" feedback items
-                    otherItems.forEach(item => {
-                        itemCounter++;
-                        tbody.appendChild(createOtherRow(item, itemCounter));
-                    });
-
-                    // If no "Other" row exists for this subarea, add a blank one
-                    if (otherItems.length === 0) {
-                        const newOtherItem = {
-                            FunctionalArea: areaName,
-                            Subarea: subareaName,
-                            ItemLabel: "Other",
-                            IsOtherItem: true,
-                            HumanAction: "",
-                            Expectation: "",
-                            Passes: false,
-                            Feedback: ""
-                        };
-                        currentDocument.Review.push(newOtherItem);
-                        const newIndex = currentDocument.Review.length - 1;
-                        newOtherItem._index = newIndex;
-                        itemCounter++;
-                        tbody.appendChild(createOtherRow(newOtherItem, itemCounter));
-                    }
-                });
-            });
-        }
-
-        function createItemRow(item, number) {
-            const tr = document.createElement('tr');
-            const idx = item._index;
-
-            // Item #
-            const tdNum = document.createElement('td');
-            tdNum.textContent = number;
-            tdNum.style.textAlign = 'center';
-            tdNum.style.color = '#888';
-
-            // Item Label
-            const tdLabel = document.createElement('td');
-            tdLabel.innerHTML = `<strong>${item.ItemLabel || item.Subarea || ''}</strong>`;
-
-            // Action & Expectation
-            const tdAction = document.createElement('td');
-            tdAction.innerHTML = `<strong>Action:</strong> ${item.HumanAction || ''}<br><br><strong>Expects:</strong> ${item.Expectation || ''}`;
-
-            // Passes?
-            const tdPasses = document.createElement('td');
-            tdPasses.className = 'checkbox-cell';
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = item.Passes;
-            checkbox.addEventListener('change', (e) => {
-                currentDocument.Review[idx].Passes = e.target.checked;
-                updateSummary();
-            });
-            tdPasses.appendChild(checkbox);
-
-            // Feedback
-            const tdFeedback = document.createElement('td');
-            const textarea = document.createElement('textarea');
-            textarea.value = item.Feedback || "";
-            textarea.placeholder = "Enter feedback...";
-            textarea.addEventListener('input', function(e) {
-                currentDocument.Review[idx].Feedback = e.target.value;
-                autoResizeTextarea(this);
-            });
-            tdFeedback.appendChild(textarea);
-
-            tr.append(tdNum, tdLabel, tdAction, tdPasses, tdFeedback);
-            requestAnimationFrame(() => autoResizeTextarea(textarea));
-            return tr;
-        }
-
-        function createOtherRow(item, number) {
-            const tr = document.createElement('tr');
-            tr.className = 'other-row';
-            const idx = item._index;
-
-            // Item #
-            const tdNum = document.createElement('td');
-            tdNum.textContent = number;
-            tdNum.style.textAlign = 'center';
-            tdNum.style.color = '#888';
-
-            // Item Label
-            const tdLabel = document.createElement('td');
-            tdLabel.innerHTML = `<em>${item.ItemLabel || 'Other'}</em>`;
-
-            // Action & Expectation (empty for Other, spans as feedback prompt)
-            const tdAction = document.createElement('td');
-            tdAction.innerHTML = '<span style="color:#999; font-size:12px;">Use this row for additional observations or feedback for this area.</span>';
-
-            // Passes? (disabled for Other rows)
-            const tdPasses = document.createElement('td');
-            tdPasses.className = 'checkbox-cell';
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = false;
-            checkbox.disabled = true;
-            checkbox.style.opacity = '0.3';
-            checkbox.style.cursor = 'default';
-            currentDocument.Review[idx].Passes = false;
-            tdPasses.appendChild(checkbox);
-
-            // Feedback
-            const tdFeedback = document.createElement('td');
-            const textarea = document.createElement('textarea');
-            textarea.value = item.Feedback || "";
-            textarea.placeholder = "Additional observations, issues, or feedback...";
-            textarea.addEventListener('input', function(e) {
-                currentDocument.Review[idx].Feedback = e.target.value;
-                autoResizeTextarea(this);
-            });
-            tdFeedback.appendChild(textarea);
-
-            tr.append(tdNum, tdLabel, tdAction, tdPasses, tdFeedback);
-            requestAnimationFrame(() => autoResizeTextarea(textarea));
-            return tr;
-        }
-
-        // --- Navigation Tree ---
-
-        function renderNavTree() {
-            navTree.innerHTML = '';
-            const groups = buildGroupedItems();
-
-            groups.forEach((subareas, areaName) => {
-                const areaDiv = document.createElement('div');
-                areaDiv.className = 'nav-area';
-
-                // Area header (accordion toggle)
-                const header = document.createElement('div');
-                header.className = 'nav-area-header';
-                header.innerHTML = `<span>${areaName}</span><span class="arrow">&#9654;</span>`;
-                header.addEventListener('click', () => {
-                    header.classList.toggle('expanded');
-                    subList.classList.toggle('expanded');
-                });
-
-                // Subarea list
-                const subList = document.createElement('div');
-                subList.className = 'nav-subareas';
-
-                subareas.forEach((_, subareaName) => {
-                    const link = document.createElement('a');
-                    link.className = 'nav-subarea-link';
-                    link.textContent = subareaName;
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const targetId = toAnchorId(areaName + '-' + subareaName);
-                        const target = document.getElementById(targetId);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            // Highlight active link
-                            document.querySelectorAll('.nav-subarea-link').forEach(l => l.classList.remove('active'));
-                            link.classList.add('active');
-                        }
-                    });
-                    subList.appendChild(link);
-                });
-
-                areaDiv.append(header, subList);
-                navTree.appendChild(areaDiv);
-
-                // Auto-expand the first area
-                if (navTree.children.length === 1) {
-                    header.classList.add('expanded');
-                    subList.classList.add('expanded');
+            link.className = 'nav-subarea-link';
+            link.textContent = subareaName;
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = toAnchorId(areaName + '-' + subareaName);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Highlight active link
+                    document.querySelectorAll('.nav-subarea-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
                 }
             });
-        }
-
-        // --- Summary ---
-
-        function updateSummary() {
-            const items = currentDocument.Review.filter(i => !i.IsOtherItem);
-            const total = items.length;
-            const passed = items.filter(i => i.Passes).length;
-            const withFeedback = items.filter(i => i.Feedback && i.Feedback.trim()).length;
-
-            summaryBar.style.display = 'flex';
-            summaryBar.innerHTML = `
-                <span><strong>Total Items:</strong> ${total}</span>
-                <span><strong>Passed:</strong> ${passed} / ${total}</span>
-                <span><strong>With Feedback:</strong> ${withFeedback}</span>
-            `;
-        }
-
-        // --- Utilities ---
-
-        function toAnchorId(str) {
-            return 'nav-' + str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
-        }
-
-        function autoResizeTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
-
-        // --- Resizer Logic ---
-
-        function initResizers(tableId) {
-            const table = document.getElementById(tableId);
-            const headers = table.querySelectorAll('th');
-            table.querySelectorAll('.resizer').forEach(r => r.remove());
-
-            headers.forEach((header, index) => {
-                if (index === headers.length - 1) return;
-                const resizer = document.createElement('div');
-                resizer.classList.add('resizer');
-                header.appendChild(resizer);
-
-                let startX, startWidth, nextStartWidth;
-                let nextHeader = header.nextElementSibling;
-
-                resizer.addEventListener('mousedown', function(e) {
-                    startX = e.pageX;
-                    startWidth = header.offsetWidth;
-                    if (nextHeader) nextStartWidth = nextHeader.offsetWidth;
-                    document.addEventListener('mousemove', mouseMoveHandler);
-                    document.addEventListener('mouseup', mouseUpHandler);
-                    resizer.classList.add('resizing');
-                });
-
-                const mouseMoveHandler = function(e) {
-                    const dx = e.pageX - startX;
-                    if (startWidth + dx > 40 && (!nextHeader || nextStartWidth - dx > 40)) {
-                        header.style.width = `${startWidth + dx}px`;
-                        if (nextHeader) nextHeader.style.width = `${nextStartWidth - dx}px`;
-                    }
-                };
-
-                const mouseUpHandler = function() {
-                    document.removeEventListener('mousemove', mouseMoveHandler);
-                    document.removeEventListener('mouseup', mouseUpHandler);
-                    resizer.classList.remove('resizing');
-                    table.querySelectorAll('textarea').forEach(autoResizeTextarea);
-                };
-            });
-        }
-
-        function saveColumnWidthsToConfig(tableId, configKey) {
-            if (!currentDocument.Configuration) currentDocument.Configuration = {};
-            const table = document.getElementById(tableId);
-            const headers = table.querySelectorAll('th');
-            currentDocument.Configuration[configKey] = Array.from(headers).map(th => th.style.width || `${th.offsetWidth}px`);
-        }
-
-        function applySavedColumnWidths(tableId, configKey) {
-            const table = document.getElementById(tableId);
-            const headers = table.querySelectorAll('th');
-            if (currentDocument.Configuration && currentDocument.Configuration[configKey]) {
-                const savedWidths = currentDocument.Configuration[configKey];
-                headers.forEach((th, index) => {
-                    if (savedWidths[index]) th.style.width = savedWidths[index];
-                });
-            }
-        }
-
-        // --- Scroll spy for nav highlighting ---
-
-        contentArea.addEventListener('scroll', () => {
-            const headerRows = document.querySelectorAll('.subarea-header-row');
-            let activeId = null;
-
-            headerRows.forEach(row => {
-                const rect = row.getBoundingClientRect();
-                const containerRect = contentArea.getBoundingClientRect();
-                if (rect.top <= containerRect.top + 60) {
-                    activeId = row.id;
-                }
-            });
-
-            if (activeId) {
-                document.querySelectorAll('.nav-subarea-link').forEach(link => {
-                    const areaDiv = link.closest('.nav-area');
-                    const areaName = areaDiv.querySelector('.nav-area-header span:first-child').textContent;
-                    const expectedId = toAnchorId(areaName + '-' + link.textContent);
-                    link.classList.toggle('active', expectedId === activeId);
-                });
-            }
+            subList.appendChild(link);
         });
-    </script>
+
+        areaDiv.append(header, subList);
+        navTree.appendChild(areaDiv);
+
+        // Auto-expand the first area
+        if (navTree.children.length === 1) {
+            header.classList.add('expanded');
+            subList.classList.add('expanded');
+        }
+    });
+}
+
+// --- Summary ---
+function updateSummary() {
+    const items = currentDocument.Review.filter(i => !i.IsOtherItem);
+    const total = items.length;
+    const passed = items.filter(i => i.Passes).length;
+    const withFeedback = items.filter(i => i.Feedback && i.Feedback.trim()).length;
+
+    summaryBar.style.display = 'flex';
+    summaryBar.innerHTML = `
+        <span><strong>Total Items:</strong> ${total}</span>
+        <span><strong>Passed:</strong> ${passed} / ${total}</span>
+        <span><strong>With Feedback:</strong> ${withFeedback}</span>
+    `;
+}
+
+// --- Utilities ---
+function toAnchorId(str) {
+    return 'nav-' + str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+}
+
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+// --- HTML escaping for interpolated user content ---
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value).replace(/[&<>"']/g, function(c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+}
+
+// --- TestData substitution ---
+// Replaces {{VariableName}} placeholders in text with values from testData.
+// Unresolved placeholders are kept visible so the tester notices missing config.
+function substituteTestData(text, testData) {
+    if (text === null || text === undefined) return '';
+    const data = testData || {};
+    return String(text).replace(/\{\{\s*([A-Za-z_][A-Za-z0-9_]*)\s*\}\}/g, function(match, name) {
+        if (Object.prototype.hasOwnProperty.call(data, name)) {
+            return String(data[name]);
+        }
+        return match; // leave placeholder intact
+    });
+}
+
+// --- Render structured Steps block ---
+// Returns HTML for the Action cell when item.Steps is present and non-empty.
+// Each step shows its action (with TestData substitution applied) and an
+// indented verification list. Non-UI verification methods render with a badge
+// and SQL verifications additionally show the query in a code block.
+function renderStepsHtml(steps, testData) {
+    if (!Array.isArray(steps) || steps.length === 0) return '';
+
+    const items = steps.map(function(step) {
+        const stepNumber = Number.isInteger(step && step.StepNumber)
+            ? step.StepNumber
+            : null;
+        const rawAction = step && step.Action ? step.Action : '';
+        const substituted = substituteTestData(rawAction, testData);
+        const hasMissing = /\{\{[^}]+\}\}/.test(substituted);
+        const actionHtml = hasMissing
+            ? escapeHtml(substituted).replace(
+                /\{\{([^}]+)\}\}/g,
+                function(_, name) { return '<span class="testdata-missing">{{' + escapeHtml(name) + '}}</span>'; }
+              )
+            : escapeHtml(substituted);
+
+        let verifHtml = '';
+        if (Array.isArray(step.Verifications) && step.Verifications.length > 0) {
+            const verifItems = step.Verifications.map(function(v) {
+                const method = (v && v.VerificationMethod) ? String(v.VerificationMethod).toLowerCase() : 'ui';
+                const badge = method !== 'ui'
+                    ? '<span class="verif-method-badge">' + escapeHtml(method) + '</span>'
+                    : '';
+                const text = v && v.Text ? escapeHtml(v.Text) : '';
+                let extra = '';
+                if (method === 'sql' && v && v.Query) {
+                    extra = '<code class="sql-query">' + escapeHtml(v.Query) + '</code>';
+                }
+                if (v && v.ExpectedValue !== undefined && v.ExpectedValue !== null && v.ExpectedValue !== '') {
+                    const ev = (typeof v.ExpectedValue === 'object')
+                        ? JSON.stringify(v.ExpectedValue)
+                        : String(v.ExpectedValue);
+                    extra += '<span class="expected-value">(expected: ' + escapeHtml(ev) + ')</span>';
+                }
+                return '<li>' + badge + text + extra + '</li>';
+            }).join('');
+            verifHtml = '<ul class="verification-list">' + verifItems + '</ul>';
+        }
+
+        const valueAttr = stepNumber !== null ? ' value="' + stepNumber + '"' : '';
+        return '<li' + valueAttr + '><span class="step-action">' + actionHtml + '</span>' + verifHtml + '</li>';
+    }).join('');
+
+    return '<ol class="step-list">' + items + '</ol>';
+}
+
+// --- Resizer Logic ---
+function initResizers(tableId) {
+    const table = document.getElementById(tableId);
+    const headers = table.querySelectorAll('th');
+    table.querySelectorAll('.resizer').forEach(r => r.remove());
+
+    headers.forEach((header, index) => {
+        if (index === headers.length - 1) return;
+
+        const resizer = document.createElement('div');
+        resizer.classList.add('resizer');
+        header.appendChild(resizer);
+
+        let startX, startWidth, nextStartWidth;
+        let nextHeader = header.nextElementSibling;
+
+        resizer.addEventListener('mousedown', function(e) {
+            startX = e.pageX;
+            startWidth = header.offsetWidth;
+            if (nextHeader) nextStartWidth = nextHeader.offsetWidth;
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+            resizer.classList.add('resizing');
+        });
+
+        const mouseMoveHandler = function(e) {
+            const dx = e.pageX - startX;
+            if (startWidth + dx > 40 && (!nextHeader || nextStartWidth - dx > 40)) {
+                header.style.width = `${startWidth + dx}px`;
+                if (nextHeader) nextHeader.style.width = `${nextStartWidth - dx}px`;
+            }
+        };
+
+        const mouseUpHandler = function() {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+            resizer.classList.remove('resizing');
+            table.querySelectorAll('textarea').forEach(autoResizeTextarea);
+        };
+    });
+}
+
+function saveColumnWidthsToConfig(tableId, configKey) {
+    if (!currentDocument.Configuration) currentDocument.Configuration = {};
+    const table = document.getElementById(tableId);
+    const headers = table.querySelectorAll('th');
+    currentDocument.Configuration[configKey] = Array.from(headers).map(th => th.style.width || `${th.offsetWidth}px`);
+}
+
+function applySavedColumnWidths(tableId, configKey) {
+    const table = document.getElementById(tableId);
+    const headers = table.querySelectorAll('th');
+    if (currentDocument.Configuration && currentDocument.Configuration[configKey]) {
+        const savedWidths = currentDocument.Configuration[configKey];
+        headers.forEach((th, index) => {
+            if (savedWidths[index]) th.style.width = savedWidths[index];
+        });
+    }
+}
+
+// --- Scroll spy for nav highlighting ---
+contentArea.addEventListener('scroll', () => {
+    const headerRows = document.querySelectorAll('.subarea-header-row');
+    let activeId = null;
+    headerRows.forEach(row => {
+        const rect = row.getBoundingClientRect();
+        const containerRect = contentArea.getBoundingClientRect();
+        if (rect.top <= containerRect.top + 60) {
+            activeId = row.id;
+        }
+    });
+    if (activeId) {
+        document.querySelectorAll('.nav-subarea-link').forEach(link => {
+            const areaDiv = link.closest('.nav-area');
+            const areaName = areaDiv.querySelector('.nav-area-header span:first-child').textContent;
+            const expectedId = toAnchorId(areaName + '-' + link.textContent);
+            link.classList.toggle('active', expectedId === activeId);
+        });
+    }
+});
+</script>
 </body>
 </html>

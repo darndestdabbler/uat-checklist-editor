@@ -1,8 +1,16 @@
 {
   "ProjectName": "Issue Tracker",
   "ReleaseLabel": "v2.1.0-rc1",
-  "DocumentDate": "",
-  "Configuration": {},
+  "DocumentDate": "4/21/2026, 3:13:16 AM",
+  "Configuration": {
+    "reviewWidths": [
+      "6%",
+      "14%",
+      "36%",
+      "8%",
+      "36%"
+    ]
+  },
   "Review": [
     {
       "FunctionalArea": "Authentication",
@@ -68,6 +76,50 @@
       "Feedback": ""
     },
     {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Edit Issue",
+      "ItemLabel": "Change Priority With Database Verification",
+      "Steps": [
+        {
+          "StepNumber": 1,
+          "Action": "Open {{BaseUrl}}/issues/{{SampleIssueId}}",
+          "Verifications": [
+            {
+              "Text": "Issue detail page loads and shows current priority"
+            }
+          ]
+        },
+        {
+          "StepNumber": 2,
+          "Action": "Change Priority to 'High' and click Save",
+          "Verifications": [
+            {
+              "Text": "A success toast appears and the Priority field shows 'High'"
+            }
+          ]
+        },
+        {
+          "StepNumber": 3,
+          "Action": "Verify the change persisted in the database",
+          "Verifications": [
+            {
+              "Text": "Priority column reads 'High' for the sample issue",
+              "VerificationMethod": "sql",
+              "Query": "SELECT Priority FROM Issues WHERE Id = 42",
+              "ExpectedValue": "High"
+            }
+          ]
+        }
+      ],
+      "TestData": {
+        "BaseUrl": "http://localhost:5000",
+        "SampleIssueId": 42
+      },
+      "E2ETestReference": "IssueEditWorkflowTests.ChangePriority_PersistsToDatabase",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
       "FunctionalArea": "Reporting",
       "Subarea": "Dashboard",
       "ItemLabel": "Summary Counts",
@@ -82,6 +134,66 @@
       "ItemLabel": "CSV Export",
       "HumanAction": "Click Export to CSV from the issue list",
       "Expectation": "A CSV file is downloaded containing all visible issues with correct columns",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Authentication",
+      "Subarea": "Login",
+      "ItemLabel": "Other",
+      "IsOtherItem": true,
+      "HumanAction": "",
+      "Expectation": "",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Authentication",
+      "Subarea": "Logout",
+      "ItemLabel": "Other",
+      "IsOtherItem": true,
+      "HumanAction": "",
+      "Expectation": "",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Create Issue",
+      "ItemLabel": "Other",
+      "IsOtherItem": true,
+      "HumanAction": "",
+      "Expectation": "",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Issue Management",
+      "Subarea": "Edit Issue",
+      "ItemLabel": "Other",
+      "IsOtherItem": true,
+      "HumanAction": "",
+      "Expectation": "",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Reporting",
+      "Subarea": "Dashboard",
+      "ItemLabel": "Other",
+      "IsOtherItem": true,
+      "HumanAction": "",
+      "Expectation": "",
+      "Passes": false,
+      "Feedback": ""
+    },
+    {
+      "FunctionalArea": "Reporting",
+      "Subarea": "Export",
+      "ItemLabel": "Other",
+      "IsOtherItem": true,
+      "HumanAction": "",
+      "Expectation": "",
       "Passes": false,
       "Feedback": ""
     }
