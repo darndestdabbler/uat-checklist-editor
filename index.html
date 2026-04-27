@@ -69,33 +69,6 @@ body {
     margin: 0; padding: 8px 16px; font-size: 12px; text-transform: uppercase;
     color: #888; letter-spacing: 0.5px;
 }
-/* --- Focused-item Id display (above Navigation header) --- */
-.focused-id-box {
-    padding: 7px 12px 8px 12px; border-bottom: 1px solid #d8c8f0;
-    background-color: #f5f0fc;
-}
-.focused-id-box .focused-id-label {
-    font-size: 10px; font-style: italic; font-weight: normal;
-    color: #8b5cf6; letter-spacing: 0.3px; margin: 0 0 3px 0;
-    text-transform: uppercase;
-}
-.focused-id-row {
-    display: flex; align-items: center; gap: 6px;
-}
-.focused-id-row code {
-    flex: 1; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-    font-size: 10px; font-style: italic; color: #6d28d9; word-break: break-all;
-    user-select: all; background-color: #ede9fe; border: 1px solid #c4b5fd;
-    border-radius: 3px; padding: 2px 5px;
-}
-.focused-id-row code.placeholder { color: #b09fd8; font-style: italic; }
-.focused-id-row button {
-    font-size: 10px; padding: 2px 7px; background-color: #7c3aed; color: #fff;
-    border: none; border-radius: 3px; cursor: pointer; flex-shrink: 0;
-}
-.focused-id-row button:hover { background-color: #6d28d9; }
-.focused-id-row button:disabled { background-color: #c4b5fd; cursor: default; }
-tr.focused-row { background-color: #fffbe6 !important; }
 .nav-area {
     border-bottom: 1px solid #eee;
 }
@@ -307,14 +280,6 @@ th { position: relative; user-select: none; }
 <div class="main-layout">
     <!-- Left Navigation -->
     <nav class="nav-pane" id="navPane">
-        <!-- Focused Item Id display (above Navigation header) -->
-        <div class="focused-id-box" id="focusedIdBox">
-            <p class="focused-id-label">Item Id (focused)</p>
-            <div class="focused-id-row">
-                <code id="focusedIdValue" class="placeholder">no item selected</code>
-                <button id="focusedIdCopyBtn" type="button" disabled title="Copy Id to clipboard">Copy</button>
-            </div>
-        </div>
         <h3>Navigation</h3>
         <div id="navTree"></div>
     </nav>
@@ -434,16 +399,6 @@ function loadDocumentFromText(contents, name, handle) {
     // Initialize defaults
     if (!currentDocument.Configuration) currentDocument.Configuration = {};
     if (!currentDocument.Review) currentDocument.Review = [];
-
-    // Backfill missing Id properties so every Review item has a stable GUID.
-    // Generated once on first load; saved on the next Save.
-    currentDocument.Review.forEach(item => {
-        if (!item.Id || typeof item.Id !== 'string' || item.Id.length === 0) {
-            item.Id = (typeof crypto !== 'undefined' && crypto.randomUUID)
-                ? crypto.randomUUID()
-                : 'uuid-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-        }
-    });
 
     applySavedColumnWidths('checklist-table', 'reviewWidths');
     renderDocument();
@@ -628,14 +583,6 @@ function createItemRow(item, number) {
 
     tr.append(tdNum, tdLabel, tdAction, tdPasses, tdFeedback);
 
-    // Clicking the row sets it as the focused item — exposes the Id in the
-    // top-of-nav focus box for copy-paste into a matching E2E test header.
-    tr.addEventListener('click', (e) => {
-        // Don't capture clicks that are meant for the embedded controls.
-        if (e.target.closest('input,textarea,button,a,select')) return;
-        setFocusedItem(item, tr);
-    });
-
     requestAnimationFrame(() => autoResizeTextarea(textarea));
     return tr;
 }
@@ -736,54 +683,6 @@ function renderNavTree() {
         }
     });
 }
-
-// --- Focused-item Id tracking ---
-// Tracks which Review item the user most recently clicked. Exposes the
-// item's Id in a small block above the Navigation header so the user can
-// copy it into a matching E2E test method's header comment
-// ("UAT Item Id: <guid>"). See docs/planning/project-guidance.md →
-// Conventions → Human UAT And Checklist Editor in the dabbler-platform
-// repo for the full GUID + step-number alignment convention.
-let _focusedItemId = null;
-
-function setFocusedItem(item, tr) {
-    const idValueEl = document.getElementById('focusedIdValue');
-    const copyBtn = document.getElementById('focusedIdCopyBtn');
-
-    document.querySelectorAll('tr.focused-row').forEach(r => r.classList.remove('focused-row'));
-    if (tr) tr.classList.add('focused-row');
-
-    if (!item || !item.Id) {
-        _focusedItemId = null;
-        idValueEl.textContent = 'no item selected';
-        idValueEl.classList.add('placeholder');
-        copyBtn.disabled = true;
-        return;
-    }
-
-    _focusedItemId = item.Id;
-    idValueEl.textContent = item.Id;
-    idValueEl.classList.remove('placeholder');
-    copyBtn.disabled = false;
-}
-
-// Wire copy button — runs once on page load.
-document.addEventListener('DOMContentLoaded', () => {
-    const copyBtn = document.getElementById('focusedIdCopyBtn');
-    if (!copyBtn) return;
-    copyBtn.addEventListener('click', async () => {
-        if (!_focusedItemId) return;
-        try {
-            await navigator.clipboard.writeText(_focusedItemId);
-            const original = copyBtn.textContent;
-            copyBtn.textContent = 'Copied';
-            setTimeout(() => { copyBtn.textContent = original; }, 1200);
-        } catch {
-            // Fallback: select-and-prompt
-            window.prompt('Copy Id (Ctrl+C / Cmd+C):', _focusedItemId);
-        }
-    });
-});
 
 // --- Summary ---
 function updateSummary() {
