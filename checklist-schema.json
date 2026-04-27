@@ -37,6 +37,11 @@
         "type": "object",
         "required": ["FunctionalArea", "Subarea", "ItemLabel"],
         "properties": {
+          "Id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Stable GUID for the checklist item. Generated once at item creation and never edited. Used by the uat-coverage-review task to mechanically pair this item to its E2E test method (the method's header comment declares 'UAT Item Id: <guid>'). Editor displays this field above the Navigation panel."
+          },
           "FunctionalArea": {
             "type": "string",
             "description": "Top-level grouping (e.g., 'Authentication', 'Issue Management'). Rendered as a section header in the editor"

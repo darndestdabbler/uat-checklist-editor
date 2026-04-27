@@ -30,6 +30,7 @@ Download `index.html` and open it directly in your browser. Everything runs clie
 * **Resizable columns** — drag column borders to adjust widths (persisted in the JSON file)
 * **Direct file save in compatible browsers** — in Chrome and Edge, overwrites the original JSON file in place; in fallback browsers, saving downloads an updated JSON file
 * **Structured Steps (optional)** — items can define numbered steps with per-step verifications, `{{variable}}` substitution from a per-item `TestData` block, and an explicit `E2ETestReference` linking to the automated test that mirrors the steps
+* **Stable Item `Id` (GUID)** — every Review item carries a stable GUID that pairs the item to its E2E test method (the test's header comment declares `UAT Item Id: <guid>`). Generated automatically on first load if missing; displayed in a focus block above the Navigation header so a clicked item's Id can be copied to clipboard with one button.
 * **Human Judgment badge** — items marked `IsJudgmentItem: true` render with a "Human Judgment" pill, signalling that the item is exempt from E2E coverage
 
 ## JSON Data Format
