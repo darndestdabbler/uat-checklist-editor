@@ -73,6 +73,7 @@ Checklist files are plain JSON. The schema is defined in [`checklist-schema.json
 
 | Field | Required | Description |
 | --- | --- | --- |
+| `Id` | No | Stable UUID that pairs this item to its E2E test method. Auto-generated on first load if absent. The matching Playwright method declares `UAT Item Id: <guid>` in its header comment. Shown in the Navigation pane when the item is focused |
 | `FunctionalArea` | Yes | Top-level grouping (e.g., "Authentication") |
 | `Subarea` | Yes | Second-level grouping (e.g., "Login") |
 | `ItemLabel` | Yes | Short name for the test case |

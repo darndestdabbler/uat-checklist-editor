@@ -71,28 +71,30 @@ body {
 }
 /* --- Focused-item Id display (above Navigation header) --- */
 .focused-id-box {
-    padding: 10px 16px 10px 16px; border-bottom: 1px solid #ddd;
-    background-color: #eef3f8;
+    padding: 7px 12px 8px 12px; border-bottom: 1px solid #d8c8f0;
+    background-color: #f5f0fc;
 }
-.focused-id-box h3 {
-    padding: 0 0 4px 0;
+.focused-id-box .focused-id-label {
+    font-size: 10px; font-style: italic; font-weight: normal;
+    color: #8b5cf6; letter-spacing: 0.3px; margin: 0 0 3px 0;
+    text-transform: uppercase;
 }
 .focused-id-row {
     display: flex; align-items: center; gap: 6px;
 }
 .focused-id-row code {
     flex: 1; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-    font-size: 11px; color: #2c3e50; word-break: break-all; user-select: all;
-    background-color: #fff; border: 1px solid #d0d7de; border-radius: 3px;
-    padding: 3px 6px;
+    font-size: 10px; font-style: italic; color: #6d28d9; word-break: break-all;
+    user-select: all; background-color: #ede9fe; border: 1px solid #c4b5fd;
+    border-radius: 3px; padding: 2px 5px;
 }
-.focused-id-row code.placeholder { color: #999; font-style: italic; }
+.focused-id-row code.placeholder { color: #b09fd8; font-style: italic; }
 .focused-id-row button {
-    font-size: 11px; padding: 3px 8px; background-color: #0969da; color: #fff;
+    font-size: 10px; padding: 2px 7px; background-color: #7c3aed; color: #fff;
     border: none; border-radius: 3px; cursor: pointer; flex-shrink: 0;
 }
-.focused-id-row button:hover { background-color: #0860c4; }
-.focused-id-row button:disabled { background-color: #999; cursor: default; }
+.focused-id-row button:hover { background-color: #6d28d9; }
+.focused-id-row button:disabled { background-color: #c4b5fd; cursor: default; }
 tr.focused-row { background-color: #fffbe6 !important; }
 .nav-area {
     border-bottom: 1px solid #eee;
@@ -307,7 +309,7 @@ th { position: relative; user-select: none; }
     <nav class="nav-pane" id="navPane">
         <!-- Focused Item Id display (above Navigation header) -->
         <div class="focused-id-box" id="focusedIdBox">
-            <h3>Item Id (focused)</h3>
+            <p class="focused-id-label">Item Id (focused)</p>
             <div class="focused-id-row">
                 <code id="focusedIdValue" class="placeholder">no item selected</code>
                 <button id="focusedIdCopyBtn" type="button" disabled title="Copy Id to clipboard">Copy</button>
